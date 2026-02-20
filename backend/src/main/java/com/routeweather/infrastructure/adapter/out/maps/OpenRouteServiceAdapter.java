@@ -6,24 +6,14 @@ import com.routeweather.domain.model.Coordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 /**
- * Outbound adapter: resolves city names to coordinates and calculates driving waypoints
- * via the OpenRouteService API.
- *
- * Geocoding docs:  https://openrouteservice.org/dev/#/api-docs/geocode
- * Directions docs: https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/post
- *
- * Requires ORS_API_KEY environment variable.
- * When the key is empty/blank, the adapter falls back to a stub (origin + destination only).
- *
- * TODO: implement real geocoding and routing HTTP calls.
+ * Replaced by NominatimOsrmAdapter.
+ * Kept for reference. Not registered as a Spring bean (@Component removed).
  */
-@Component
 public class OpenRouteServiceAdapter implements RouteCalculatorPort {
 
     private static final Logger log = LoggerFactory.getLogger(OpenRouteServiceAdapter.class);

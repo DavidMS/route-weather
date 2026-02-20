@@ -15,9 +15,12 @@ management:
 external:
   openmeteo:
     base-url: https://api.open-meteo.com/v1
-  openrouteservice:
-    base-url: https://api.openrouteservice.org/v2
-    api-key: ${ORS_API_KEY:}   # Set ORS_API_KEY env var; empty = stub mode
+  nominatim:
+    base-url: https://nominatim.openstreetmap.org
+    user-agent: route-weather-app/1.0   # OSM requires a descriptive User-Agent
+  osrm:
+    base-url: http://router.project-osrm.org
+    max-waypoints: 6                    # sample this many evenly-spaced points from the route
 
 logging:
   level:
