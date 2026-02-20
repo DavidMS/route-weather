@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: route-weather
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+# External API configuration
+external:
+  openmeteo:
+    base-url: https://api.open-meteo.com/v1
+  openrouteservice:
+    base-url: https://api.openrouteservice.org/v2
+    api-key: ${ORS_API_KEY:}   # Set ORS_API_KEY env var; empty = stub mode
+
+logging:
+  level:
+    com.routeweather: DEBUG
