@@ -26,17 +26,21 @@ export default function App() {
 
   return (
     <main>
-      <h1>Route Weather Forecast</h1>
+      <h1 className="app-title">🌤️ Route Weather</h1>
 
-      <RouteForm
-        onSubmit={handleRouteSubmit}
-        loading={loadingState === 'loading'}
-      />
+      <RouteForm onSubmit={handleRouteSubmit} loading={loadingState === 'loading'} />
+
+      {loadingState === 'loading' && (
+        <div className="loading">
+          <div className="spinner" />
+          Fetching route and forecasts…
+        </div>
+      )}
 
       {loadingState === 'error' && error && (
-        <p role="alert" style={{ color: 'red' }}>
+        <div className="error-banner" role="alert">
           {error}
-        </p>
+        </div>
       )}
 
       {loadingState === 'success' && report && (

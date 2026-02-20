@@ -1,0 +1,236 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f0f4f8;
+  color: #1a202c;
+  min-height: 100vh;
+}
+
+/* ─── Layout ───────────────────────────────────────────────────────────────── */
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+}
+
+.app-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 1.75rem;
+  color: #2d3748;
+}
+
+/* ─── Form ─────────────────────────────────────────────────────────────────── */
+
+.route-form {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  margin-bottom: 2rem;
+}
+
+.route-form h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 1.1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 140px;
+}
+
+.form-field label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.form-field input {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.95rem;
+  color: #2d3748;
+  transition: border-color 0.15s;
+  background: #fff;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+}
+
+.submit-btn {
+  background: #4299e1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #3182ce;
+}
+
+.submit-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ─── Loading ──────────────────────────────────────────────────────────────── */
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #718096;
+  font-size: 0.95rem;
+  padding: 1rem 0;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid #e2e8f0;
+  border-top-color: #4299e1;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Error ────────────────────────────────────────────────────────────────── */
+
+.error-banner {
+  background: #fff5f5;
+  border: 1.5px solid #feb2b2;
+  color: #c53030;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Weather report ───────────────────────────────────────────────────────── */
+
+.route-header {
+  margin-bottom: 1.25rem;
+}
+
+.route-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.route-header .route-date {
+  font-size: 0.88rem;
+  color: #718096;
+  margin-top: 0.2rem;
+}
+
+/* ─── Waypoint cards ───────────────────────────────────────────────────────── */
+
+.waypoints {
+  display: flex;
+  gap: 0.9rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+}
+
+/* Subtle scrollbar */
+.waypoints::-webkit-scrollbar { height: 5px; }
+.waypoints::-webkit-scrollbar-track { background: transparent; }
+.waypoints::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 99px; }
+
+.weather-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  min-width: 150px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.weather-card.is-origin { border-top: 3px solid #48bb78; }
+.weather-card.is-destination { border-top: 3px solid #ed8936; }
+.weather-card.is-waypoint { border-top: 3px solid #4299e1; }
+
+.card-stop {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #a0aec0;
+}
+
+.card-icon {
+  font-size: 2.1rem;
+  line-height: 1;
+  margin: 0.2rem 0;
+}
+
+.card-condition {
+  font-size: 0.82rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.card-temp {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #2d3748;
+  line-height: 1.1;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.3rem;
+}
+
+.card-detail {
+  font-size: 0.78rem;
+  color: #718096;
+}
+
+.card-coords {
+  font-size: 0.68rem;
+  color: #cbd5e0;
+  margin-top: 0.4rem;
+  font-variant-numeric: tabular-nums;
+}
