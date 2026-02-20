@@ -234,3 +234,49 @@ main {
   margin-top: 0.4rem;
   font-variant-numeric: tabular-nums;
 }
+
+/* ─── Map ──────────────────────────────────────────────────────────────────── */
+
+.route-map {
+  height: 360px;
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  /* Prevent map tiles from rendering above other UI elements */
+  z-index: 0;
+  position: relative;
+}
+
+/* ─── Map popup ────────────────────────────────────────────────────────────── */
+
+.map-popup {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  min-width: 120px;
+}
+
+.map-popup-stop {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #a0aec0;
+  margin-bottom: 0.15rem;
+}
+
+.map-popup-condition {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.map-popup-temp {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #2d3748;
+  margin: 0.1rem 0;
+}
+
+.map-popup-detail {
+  color: #718096;
+}

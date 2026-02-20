@@ -1,4 +1,5 @@
 import type { RouteWeatherResponse, WeatherPointResponse, WeatherCondition } from '../types'
+import { RouteMap } from './RouteMap'
 
 interface Props {
   report: RouteWeatherResponse
@@ -79,11 +80,14 @@ export function WeatherReport({ report }: Props) {
       {total === 0 ? (
         <p>No weather data available for this route.</p>
       ) : (
-        <div className="waypoints">
-          {report.weatherPoints.map((point, i) => (
-            <WeatherCard key={i} point={point} index={i} total={total} />
-          ))}
-        </div>
+        <>
+          <RouteMap weatherPoints={report.weatherPoints} />
+          <div className="waypoints">
+            {report.weatherPoints.map((point, i) => (
+              <WeatherCard key={i} point={point} index={i} total={total} />
+            ))}
+          </div>
+        </>
       )}
     </section>
   )
