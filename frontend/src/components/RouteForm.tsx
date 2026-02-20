@@ -19,7 +19,7 @@ export function RouteForm({ onSubmit, loading }: Props) {
   }
 
   return (
-    <form className="route-form" onSubmit={handleSubmit}>
+    <form className="route-form" onSubmit={handleSubmit} aria-label="Route form">
       <h2>Plan your route</h2>
       <div className="form-row">
         <div className="form-field">
