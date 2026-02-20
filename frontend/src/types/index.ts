@@ -18,11 +18,17 @@ export interface WeatherPointResponse {
   condition: WeatherCondition;
 }
 
+export interface CoordinatesResponse {
+  latitude: number;
+  longitude: number;
+}
+
 export interface RouteWeatherResponse {
   origin: string;
   destination: string;
   travelDate: string;
   weatherPoints: WeatherPointResponse[];
+  routeGeometry: CoordinatesResponse[];
 }
 
 // ─── Domain enums (mirror the backend) ───────────────────────────────────────

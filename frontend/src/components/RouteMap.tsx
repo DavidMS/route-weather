@@ -2,11 +2,9 @@ import { useMemo, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import type { WeatherPointResponse, WeatherCondition } from '../types'
+import type { CoordinatesResponse, WeatherPointResponse, WeatherCondition } from '../types'
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
-// Using divIcon (coloured circles) avoids the classic Leaflet + Vite
-// asset-path issue with the default PNG marker icons.
 
 function circleIcon(color: string) {
   return L.divIcon({
@@ -25,9 +23,9 @@ function circleIcon(color: string) {
 }
 
 const ICONS = {
-  start:    circleIcon('#48bb78'),   // green  — matches card border
-  waypoint: circleIcon('#4299e1'),   // blue
-  end:      circleIcon('#ed8936'),   // orange — matches card border
+  start:    circleIcon('#48bb78'),
+  waypoint: circleIcon('#4299e1'),
+  end:      circleIcon('#ed8936'),
 }
 
 // ─── Auto-fit bounds ──────────────────────────────────────────────────────────
@@ -42,7 +40,7 @@ function FitBounds({ positions }: { positions: L.LatLngTuple[] }) {
   return null
 }
 
-// ─── Labels / emoji (mirrors WeatherReport) ───────────────────────────────────
+// ─── Labels / emoji ───────────────────────────────────────────────────────────
 
 const CONDITION_ICON: Record<WeatherCondition, string> = {
   CLEAR:        '☀️',
@@ -70,10 +68,18 @@ const CONDITION_LABEL: Record<WeatherCondition, string> = {
 
 interface Props {
   weatherPoints: WeatherPointResponse[]
+  routeGeometry: CoordinatesResponse[]
 }
 
-export function RouteMap({ weatherPoints }: Props) {
-  const positions = useMemo<L.LatLngTuple[]>(
+export function RouteMap({ weatherPoints, routeGeometry }: Props) {
+  // Full road-following polyline from the geometry field
+  const geometryPositions = useMemo<L.LatLngTuple[]>(
+    () => routeGeometry.map((c) => [c.latitude, c.longitude]),
+    [routeGeometry],
+  )
+
+  // Weather marker positions (subset of the geometry, used for fit bounds)
+  const markerPositions = useMemo<L.LatLngTuple[]>(
     () => weatherPoints.map((p) => [p.latitude, p.longitude]),
     [weatherPoints],
   )
@@ -81,19 +87,20 @@ export function RouteMap({ weatherPoints }: Props) {
   const total = weatherPoints.length
 
   function markerIcon(index: number) {
-    if (index === 0)          return ICONS.start
-    if (index === total - 1)  return ICONS.end
+    if (index === 0)         return ICONS.start
+    if (index === total - 1) return ICONS.end
     return ICONS.waypoint
   }
 
   function stopLabel(index: number) {
-    if (index === 0)          return 'Start'
-    if (index === total - 1)  return 'End'
+    if (index === 0)         return 'Start'
+    if (index === total - 1) return 'End'
     return `Stop ${index + 1}`
   }
 
-  // Initial center — overridden immediately by FitBounds
-  const defaultCenter = positions[0] ?? ([40.0, -4.0] as L.LatLngTuple)
+  // Fit bounds to the full geometry so the entire road is visible
+  const boundsPositions = geometryPositions.length > 0 ? geometryPositions : markerPositions
+  const defaultCenter = boundsPositions[0] ?? ([40.0, -4.0] as L.LatLngTuple)
 
   return (
     <MapContainer center={defaultCenter} zoom={6} className="route-map" scrollWheelZoom={false}>
@@ -102,17 +109,19 @@ export function RouteMap({ weatherPoints }: Props) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      <FitBounds positions={positions} />
+      <FitBounds positions={boundsPositions} />
 
-      {positions.length > 1 && (
+      {/* Road-following polyline from OSRM simplified geometry */}
+      {geometryPositions.length > 1 && (
         <Polyline
-          positions={positions}
-          pathOptions={{ color: '#4299e1', weight: 3, opacity: 0.75, dashArray: '6 4' }}
+          positions={geometryPositions}
+          pathOptions={{ color: '#4299e1', weight: 3, opacity: 0.8 }}
         />
       )}
 
+      {/* Weather markers */}
       {weatherPoints.map((point, i) => (
-        <Marker key={i} position={positions[i]} icon={markerIcon(i)}>
+        <Marker key={i} position={markerPositions[i]} icon={markerIcon(i)}>
           <Popup>
             <div className="map-popup">
               <div className="map-popup-stop">{stopLabel(i)}</div>

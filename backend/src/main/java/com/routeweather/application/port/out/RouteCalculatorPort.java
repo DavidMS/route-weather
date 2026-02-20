@@ -1,16 +1,12 @@
 package com.routeweather.application.port.out;
 
 import com.routeweather.domain.model.Coordinates;
-
-import java.util.List;
+import com.routeweather.domain.model.RouteDetails;
 
 /**
- * Outbound port (driven side): resolves a route into a list of waypoints.
+ * Outbound port (driven side): geocoding and route calculation.
  *
- * The application layer depends on this interface; the actual HTTP call
- * lives in the infrastructure adapter (OpenRouteServiceAdapter).
- *
- * Also responsible for geocoding: converting city names → Coordinates.
+ * Implemented by: infrastructure/adapter/out/maps/NominatimOsrmAdapter
  */
 public interface RouteCalculatorPort {
 
@@ -22,8 +18,9 @@ public interface RouteCalculatorPort {
     Coordinates geocode(String placeName);
 
     /**
-     * Return a list of waypoints along the driving route between two coordinates.
-     * The list includes the origin as the first element and destination as the last.
+     * Calculate a driving route between two coordinates.
+     * Returns both the road-following geometry (for map display) and a small
+     * set of evenly-sampled waypoints (for weather forecast queries).
      */
-    List<Coordinates> calculateWaypoints(Coordinates origin, Coordinates destination);
+    RouteDetails calculateRoute(Coordinates origin, Coordinates destination);
 }

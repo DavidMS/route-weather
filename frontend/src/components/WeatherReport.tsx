@@ -81,7 +81,7 @@ export function WeatherReport({ report }: Props) {
         <p>No weather data available for this route.</p>
       ) : (
         <>
-          <RouteMap weatherPoints={report.weatherPoints} />
+          <RouteMap weatherPoints={report.weatherPoints} routeGeometry={report.routeGeometry} />
           <div className="waypoints">
             {report.weatherPoints.map((point, i) => (
               <WeatherCard key={i} point={point} index={i} total={total} />

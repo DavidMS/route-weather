@@ -1,8 +1,10 @@
 package com.routeweather.infrastructure.adapter.in.rest.mapper;
 
 import com.routeweather.application.port.in.RouteWeatherQuery;
+import com.routeweather.domain.model.Coordinates;
 import com.routeweather.domain.model.RouteWeatherReport;
 import com.routeweather.domain.model.WeatherPoint;
+import com.routeweather.infrastructure.adapter.in.rest.dto.CoordinatesResponse;
 import com.routeweather.infrastructure.adapter.in.rest.dto.RouteRequest;
 import com.routeweather.infrastructure.adapter.in.rest.dto.RouteWeatherResponse;
 import com.routeweather.infrastructure.adapter.in.rest.dto.WeatherPointResponse;
@@ -17,10 +19,6 @@ public class RouteWeatherMapper {
 
     private RouteWeatherMapper() {}
 
-    /**
-     * Convert a validated REST request into an application query.
-     * City name geocoding and Route construction happen inside the service.
-     */
     public static RouteWeatherQuery toQuery(RouteRequest request) {
         return new RouteWeatherQuery(
                 request.origin(),
@@ -29,18 +27,23 @@ public class RouteWeatherMapper {
     }
 
     public static RouteWeatherResponse toResponse(RouteWeatherReport report) {
-        List<WeatherPointResponse> points = report.getWeatherPoints().stream()
-                .map(RouteWeatherMapper::toPointResponse)
+        List<WeatherPointResponse> weatherPoints = report.getWeatherPoints().stream()
+                .map(RouteWeatherMapper::toWeatherPointResponse)
+                .toList();
+
+        List<CoordinatesResponse> geometry = report.getRouteGeometry().stream()
+                .map(c -> new CoordinatesResponse(c.latitude(), c.longitude()))
                 .toList();
 
         return new RouteWeatherResponse(
                 report.getRoute().getOriginName(),
                 report.getRoute().getDestinationName(),
                 report.getRoute().getTravelDate(),
-                points);
+                weatherPoints,
+                geometry);
     }
 
-    private static WeatherPointResponse toPointResponse(WeatherPoint point) {
+    private static WeatherPointResponse toWeatherPointResponse(WeatherPoint point) {
         return new WeatherPointResponse(
                 point.coordinates().latitude(),
                 point.coordinates().longitude(),

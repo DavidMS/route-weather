@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.routeweather.application.port.out.RouteCalculatorPort;
 import com.routeweather.domain.exception.RouteNotFoundException;
 import com.routeweather.domain.model.Coordinates;
+import com.routeweather.domain.model.RouteDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +51,8 @@ public class NominatimOsrmAdapter implements RouteCalculatorPort {
     }
 
     /**
-     * Converts a place name (city, address) to geographic coordinates using Nominatim.
-     * Nominatim requires a descriptive User-Agent header per OSM usage policy.
+     * Converts a place name to coordinates using Nominatim.
+     * Nominatim requires a descriptive User-Agent per OSM usage policy.
      */
     @Override
     public Coordinates geocode(String placeName) {
@@ -86,20 +87,22 @@ public class NominatimOsrmAdapter implements RouteCalculatorPort {
     }
 
     /**
-     * Calculates driving waypoints between two coordinates using OSRM.
-     * OSRM returns the full polyline (can be thousands of points); we sample
-     * up to maxWaypoints evenly-spaced points including start and end.
+     * Calls OSRM once with overview=simplified to get the road-following geometry,
+     * then samples maxWaypoints evenly from it for weather forecast queries.
+     *
+     * overview=simplified gives a compact polyline (~20-50 points for long routes)
+     * that still accurately follows the road, making it suitable for both map
+     * display and as a source for evenly-sampled weather waypoints.
      */
     @Override
-    public List<Coordinates> calculateWaypoints(Coordinates origin, Coordinates destination) {
-        // OSRM expects coordinates as lon,lat pairs separated by semicolons
-        String coords = String.format("%s,%s;%s,%s",
+    public RouteDetails calculateRoute(Coordinates origin, Coordinates destination) {
+        String coordParam = String.format("%s,%s;%s,%s",
                 origin.longitude(), origin.latitude(),
                 destination.longitude(), destination.latitude());
 
         String url = UriComponentsBuilder
-                .fromHttpUrl(osrmBaseUrl + "/route/v1/driving/" + coords)
-                .queryParam("overview", "full")
+                .fromHttpUrl(osrmBaseUrl + "/route/v1/driving/" + coordParam)
+                .queryParam("overview", "simplified")
                 .queryParam("geometries", "geojson")
                 .build()
                 .toUriString();
@@ -110,35 +113,31 @@ public class NominatimOsrmAdapter implements RouteCalculatorPort {
             String code = response.path("code").asText();
             if (!"Ok".equals(code)) {
                 log.warn("OSRM returned code '{}', falling back to origin+destination", code);
-                return List.of(origin, destination);
+                List<Coordinates> fallback = List.of(origin, destination);
+                return new RouteDetails(fallback, fallback);
             }
 
             JsonNode coordinates = response.path("routes").get(0)
                     .path("geometry").path("coordinates");
 
-            List<Coordinates> allPoints = new ArrayList<>(coordinates.size());
+            List<Coordinates> geometry = new ArrayList<>(coordinates.size());
             for (JsonNode coord : coordinates) {
-                double lon = coord.get(0).asDouble();
-                double lat = coord.get(1).asDouble();
-                allPoints.add(new Coordinates(lat, lon));
+                geometry.add(new Coordinates(coord.get(1).asDouble(), coord.get(0).asDouble()));
             }
 
-            log.debug("OSRM returned {} coordinates, sampling {} waypoints", allPoints.size(), maxWaypoints);
-            return sampleEvenly(allPoints, maxWaypoints);
+            List<Coordinates> weatherWaypoints = sampleEvenly(geometry, maxWaypoints);
+            log.debug("OSRM simplified: {} geometry points, {} weather waypoints", geometry.size(), weatherWaypoints.size());
+            return new RouteDetails(geometry, weatherWaypoints);
 
         } catch (RestClientException e) {
             log.warn("OSRM routing failed: {}, falling back to origin+destination", e.getMessage());
-            return List.of(origin, destination);
+            List<Coordinates> fallback = List.of(origin, destination);
+            return new RouteDetails(fallback, fallback);
         }
     }
 
-    /**
-     * Samples {@code n} evenly-spaced points from the full coordinate list,
-     * always including the first and last point.
-     */
     private List<Coordinates> sampleEvenly(List<Coordinates> points, int n) {
         if (points.size() <= n) return points;
-
         List<Coordinates> sampled = new ArrayList<>(n);
         double step = (double) (points.size() - 1) / (n - 1);
         for (int i = 0; i < n; i++) {

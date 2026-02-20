@@ -7,6 +7,11 @@ const mockReport: RouteWeatherResponse = {
   origin: 'Madrid',
   destination: 'Barcelona',
   travelDate: '2026-03-01',
+  routeGeometry: [
+    { latitude: 40.4176, longitude: -3.7037 },
+    { latitude: 41.0,    longitude: -1.5    },
+    { latitude: 41.385,  longitude: 2.173   },
+  ],
   weatherPoints: [
     {
       latitude: 40.4176,

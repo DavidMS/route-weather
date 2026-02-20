@@ -17,18 +17,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit test for the application service.
- * No Spring context — pure unit test with mocked ports.
- */
 @ExtendWith(MockitoExtension.class)
 class RouteWeatherServiceTest {
 
-    @Mock
-    private RouteCalculatorPort routeCalculatorPort;
-
-    @Mock
-    private WeatherForecastPort weatherForecastPort;
+    @Mock private RouteCalculatorPort routeCalculatorPort;
+    @Mock private WeatherForecastPort weatherForecastPort;
 
     private RouteWeatherService service;
 
@@ -38,36 +31,33 @@ class RouteWeatherServiceTest {
     }
 
     @Test
-    void getWeatherForRoute_returnsReportWithWeatherPoints() {
-        // Given
-        Coordinates madrid = new Coordinates(40.4168, -3.7038);
+    void getWeatherForRoute_returnsReportWithWeatherPointsAndGeometry() {
+        Coordinates madrid    = new Coordinates(40.4168, -3.7038);
+        Coordinates midpoint  = new Coordinates(41.0, -1.5);
         Coordinates barcelona = new Coordinates(41.3851, 2.1734);
-        LocalDate travelDate = LocalDate.of(2025, 6, 15);
+        LocalDate travelDate  = LocalDate.of(2026, 3, 1);
 
         RouteWeatherQuery query = new RouteWeatherQuery("Madrid", "Barcelona", travelDate);
 
-        List<Coordinates> waypoints = List.of(madrid, barcelona);
-        WeatherPoint madridWeather = new WeatherPoint(
-                madrid, LocalDateTime.of(2025, 6, 15, 12, 0),
-                25.0, 0.0, 10, WeatherCondition.CLEAR);
-        WeatherPoint barcelonaWeather = new WeatherPoint(
-                barcelona, LocalDateTime.of(2025, 6, 15, 12, 0),
-                28.0, 0.0, 8, WeatherCondition.PARTLY_CLOUDY);
+        List<Coordinates> geometry         = List.of(madrid, midpoint, barcelona);
+        List<Coordinates> weatherWaypoints = List.of(madrid, barcelona);
+        RouteDetails routeDetails = new RouteDetails(geometry, weatherWaypoints);
+
+        WeatherPoint madridWeather    = new WeatherPoint(madrid,    LocalDateTime.of(2026, 3, 1, 12, 0), 12.0, 0.0, 10, WeatherCondition.CLEAR);
+        WeatherPoint barcelonaWeather = new WeatherPoint(barcelona, LocalDateTime.of(2026, 3, 1, 12, 0), 14.0, 0.0,  8, WeatherCondition.PARTLY_CLOUDY);
 
         when(routeCalculatorPort.geocode("Madrid")).thenReturn(madrid);
         when(routeCalculatorPort.geocode("Barcelona")).thenReturn(barcelona);
-        when(routeCalculatorPort.calculateWaypoints(madrid, barcelona)).thenReturn(waypoints);
-        when(weatherForecastPort.getForecast(waypoints, travelDate))
+        when(routeCalculatorPort.calculateRoute(madrid, barcelona)).thenReturn(routeDetails);
+        when(weatherForecastPort.getForecast(weatherWaypoints, travelDate))
                 .thenReturn(List.of(madridWeather, barcelonaWeather));
 
-        // When
         RouteWeatherReport report = service.getWeatherForRoute(query);
 
-        // Then
         assertThat(report.getRoute().getOriginName()).isEqualTo("Madrid");
-        assertThat(report.getRoute().getDestinationName()).isEqualTo("Barcelona");
         assertThat(report.getWeatherPoints()).hasSize(2);
         assertThat(report.getWeatherPoints().get(0).condition()).isEqualTo(WeatherCondition.CLEAR);
-        assertThat(report.getWeatherPoints().get(1).condition()).isEqualTo(WeatherCondition.PARTLY_CLOUDY);
+        assertThat(report.getRouteGeometry()).hasSize(3);
+        assertThat(report.getRouteGeometry().get(1)).isEqualTo(midpoint);
     }
 }

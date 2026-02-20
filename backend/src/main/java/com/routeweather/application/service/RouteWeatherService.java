@@ -6,6 +6,7 @@ import com.routeweather.application.port.out.RouteCalculatorPort;
 import com.routeweather.application.port.out.WeatherForecastPort;
 import com.routeweather.domain.model.Coordinates;
 import com.routeweather.domain.model.Route;
+import com.routeweather.domain.model.RouteDetails;
 import com.routeweather.domain.model.RouteWeatherReport;
 import com.routeweather.domain.model.WeatherPoint;
 
@@ -17,12 +18,11 @@ import java.util.List;
  * Flow:
  *  1. Geocode origin and destination city names → Coordinates
  *  2. Build the domain Route entity
- *  3. Calculate waypoints along the driving route
- *  4. Fetch weather forecast at each waypoint
- *  5. Assemble and return RouteWeatherReport
+ *  3. Calculate route: returns road-following geometry + sampled weather waypoints
+ *  4. Fetch weather forecast at each weather waypoint
+ *  5. Assemble and return RouteWeatherReport (includes geometry for map display)
  *
- * This is a plain Java class — NO Spring annotations.
- * It is wired as a Spring bean via BeanConfiguration.
+ * Plain Java class — NO Spring annotations. Wired in BeanConfiguration.
  */
 public class RouteWeatherService implements GetRouteWeatherUseCase {
 
@@ -48,12 +48,11 @@ public class RouteWeatherService implements GetRouteWeatherUseCase {
                 destinationCoords,
                 query.travelDate());
 
-        List<Coordinates> waypoints = routeCalculatorPort.calculateWaypoints(
-                originCoords, destinationCoords);
+        RouteDetails routeDetails = routeCalculatorPort.calculateRoute(originCoords, destinationCoords);
 
         List<WeatherPoint> weatherPoints = weatherForecastPort.getForecast(
-                waypoints, query.travelDate());
+                routeDetails.weatherWaypoints(), query.travelDate());
 
-        return new RouteWeatherReport(route, weatherPoints);
+        return new RouteWeatherReport(route, weatherPoints, routeDetails.geometry());
     }
 }
