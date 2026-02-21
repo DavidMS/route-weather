@@ -175,7 +175,8 @@ Use the `/add-feature` command for a guided walkthrough. Manual steps:
 ---
 
 ## Custom Commands (Skills)
-Available via `/command-name` in Claude Code:
+Available via `/command-name` in Claude Code.
+Defined in `.claude/skills/<name>/SKILL.md`:
 
 | Command           | Purpose                                              |
 |-------------------|------------------------------------------------------|
