@@ -116,6 +116,50 @@ docker compose down                        # Stop
 
 ---
 
+## Git Workflow (MANDATORY)
+
+> **Never commit directly to `main`.** Every piece of work — feature, fix, or
+> chore — must go through a branch and a pull request.
+
+### Starting any new task
+```bash
+git checkout main && git pull          # always branch from an up-to-date main
+git checkout -b <type>/<short-name>    # e.g. feat/alert-thresholds, fix/map-bounds
+```
+
+Branch naming convention:
+| Prefix   | When to use                          |
+|----------|--------------------------------------|
+| `feat/`  | new functionality                    |
+| `fix/`   | bug fix                              |
+| `chore/` | tooling, deps, config, docs          |
+| `test/`  | adding or fixing tests only          |
+
+### During work
+Commit early and often to the feature branch. Commit messages follow
+[Conventional Commits](https://www.conventionalcommits.org/):
+```
+feat(map): add polyline following road geometry
+fix(weather): handle Open-Meteo out-of-range date error
+```
+
+### Opening a PR
+When the feature is complete and tests pass:
+```bash
+git push -u origin <branch-name>
+gh pr create --base main --title "<title>" --body "<summary>"
+```
+- PR title mirrors the main commit message.
+- Body: what changed, why, how to test.
+- Do **not** merge the PR yourself — leave that to the user.
+
+### What NEVER to do
+- `git push origin main` (direct push to main)
+- Committing secrets or API keys to any tracked file
+- Merging without a PR
+
+---
+
 ## Adding a New Feature (step-by-step)
 Use the `/add-feature` command for a guided walkthrough. Manual steps:
 

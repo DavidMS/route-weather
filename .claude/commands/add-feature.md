@@ -2,6 +2,13 @@
 
 Scaffold a new feature following hexagonal architecture. Ask the user for the feature name and description before proceeding.
 
+## Step 0 — Create a feature branch (ALWAYS first)
+```bash
+git checkout main && git pull
+git checkout -b feat/<kebab-case-feature-name>
+```
+Do not write any code until this branch exists.
+
 ## Step 1 — Gather Requirements
 Ask:
 1. What is the feature name? (e.g., "AlertThresholds", "SavedRoutes")
@@ -63,3 +70,13 @@ Update `infrastructure/config/BeanConfiguration.java`:
 - [ ] New beans wired in `BeanConfiguration`
 - [ ] At least one unit test for the service
 - [ ] Endpoint documented in README or OpenAPI annotations
+
+## Step 10 — Open a Pull Request
+```bash
+git push -u origin feat/<feature-name>
+gh pr create --base main \
+  --title "feat: <short description>" \
+  --body "## What\n<what changed>\n\n## Why\n<motivation>\n\n## How to test\n<steps>"
+```
+- Never merge the PR yourself — leave that to the user.
+- Never push directly to `main`.
