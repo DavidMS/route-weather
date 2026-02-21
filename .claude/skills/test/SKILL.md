@@ -1,3 +1,8 @@
+---
+name: test
+description: Run the full test suite for backend and frontend. Provide a clear summary.
+---
+
 # Test Command
 
 Run the full test suite for backend and frontend. Provide a clear summary.

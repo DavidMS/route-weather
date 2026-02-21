@@ -1,3 +1,8 @@
+---
+name: build
+description: Build both the backend and frontend. Report all errors clearly.
+---
+
 # Build Command
 
 Build both the backend and frontend. Report all errors clearly.

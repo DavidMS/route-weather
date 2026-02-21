@@ -1,3 +1,8 @@
+---
+name: add-feature
+description: Scaffold a new feature following hexagonal architecture. Ask the user for the feature name and description before proceeding.
+---
+
 # Add Feature Command
 
 Scaffold a new feature following hexagonal architecture. Ask the user for the feature name and description before proceeding.

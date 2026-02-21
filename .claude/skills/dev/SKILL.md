@@ -1,3 +1,8 @@
+---
+name: dev
+description: Start the full development environment and verify everything is running.
+---
+
 # Dev Command
 
 Start the full development environment and verify everything is running.

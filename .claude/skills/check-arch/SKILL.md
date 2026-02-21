@@ -1,3 +1,8 @@
+---
+name: check-arch
+description: Audit the backend codebase for hexagonal architecture violations. Read all Java files and report any issues.
+---
+
 # Check Architecture Command
 
 Audit the backend codebase for hexagonal architecture violations. Read all Java files and report any issues.
