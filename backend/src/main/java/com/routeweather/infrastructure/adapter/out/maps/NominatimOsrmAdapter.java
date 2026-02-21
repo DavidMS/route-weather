@@ -114,11 +114,12 @@ public class NominatimOsrmAdapter implements RouteCalculatorPort {
             if (!"Ok".equals(code)) {
                 log.warn("OSRM returned code '{}', falling back to origin+destination", code);
                 List<Coordinates> fallback = List.of(origin, destination);
-                return new RouteDetails(fallback, fallback);
+                return new RouteDetails(fallback, fallback, 0.0);
             }
 
-            JsonNode coordinates = response.path("routes").get(0)
-                    .path("geometry").path("coordinates");
+            JsonNode route = response.path("routes").get(0);
+            double totalDurationSeconds = route.path("duration").asDouble(0.0);
+            JsonNode coordinates = route.path("geometry").path("coordinates");
 
             List<Coordinates> geometry = new ArrayList<>(coordinates.size());
             for (JsonNode coord : coordinates) {
@@ -126,13 +127,14 @@ public class NominatimOsrmAdapter implements RouteCalculatorPort {
             }
 
             List<Coordinates> weatherWaypoints = sampleEvenly(geometry, maxWaypoints);
-            log.debug("OSRM simplified: {} geometry points, {} weather waypoints", geometry.size(), weatherWaypoints.size());
-            return new RouteDetails(geometry, weatherWaypoints);
+            log.debug("OSRM simplified: {} geometry points, {} weather waypoints, duration {}s",
+                    geometry.size(), weatherWaypoints.size(), totalDurationSeconds);
+            return new RouteDetails(geometry, weatherWaypoints, totalDurationSeconds);
 
         } catch (RestClientException e) {
             log.warn("OSRM routing failed: {}, falling back to origin+destination", e.getMessage());
             List<Coordinates> fallback = List.of(origin, destination);
-            return new RouteDetails(fallback, fallback);
+            return new RouteDetails(fallback, fallback, 0.0);
         }
     }
 

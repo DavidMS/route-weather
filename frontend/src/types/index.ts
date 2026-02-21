@@ -4,6 +4,7 @@ export interface RouteRequest {
   origin: string;
   destination: string;
   travelDate: string; // ISO date string: YYYY-MM-DD
+  departureTime: string; // 24-hour time string: HH:mm
 }
 
 // ─── Response types ───────────────────────────────────────────────────────────

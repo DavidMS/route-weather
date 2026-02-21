@@ -11,5 +11,6 @@ import java.util.List;
  */
 public record RouteDetails(
         List<Coordinates> geometry,
-        List<Coordinates> weatherWaypoints
+        List<Coordinates> weatherWaypoints,
+        double totalDurationSeconds
 ) {}

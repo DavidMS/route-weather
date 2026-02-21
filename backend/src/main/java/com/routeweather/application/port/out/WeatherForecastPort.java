@@ -1,9 +1,8 @@
 package com.routeweather.application.port.out;
 
-import com.routeweather.domain.model.Coordinates;
+import com.routeweather.domain.model.TimedWaypoint;
 import com.routeweather.domain.model.WeatherPoint;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -14,11 +13,13 @@ import java.util.List;
 public interface WeatherForecastPort {
 
     /**
-     * Return weather forecasts for each of the given waypoints on the specified date.
+     * Return hourly weather forecasts for each timed waypoint.
      *
-     * @param waypoints the list of geographic points to query
-     * @param date      the travel date (forecasts are daily)
+     * Each waypoint carries both the geographic position and the estimated arrival time,
+     * so the adapter can fetch the forecast for the exact hour the traveller will be there.
+     *
+     * @param waypoints timed waypoints in route order
      * @return a WeatherPoint for each waypoint, in the same order
      */
-    List<WeatherPoint> getForecast(List<Coordinates> waypoints, LocalDate date);
+    List<WeatherPoint> getForecast(List<TimedWaypoint> waypoints);
 }

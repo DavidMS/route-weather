@@ -23,7 +23,8 @@ public class RouteWeatherMapper {
         return new RouteWeatherQuery(
                 request.origin(),
                 request.destination(),
-                request.travelDate());
+                request.travelDate(),
+                request.departureTime());
     }
 
     public static RouteWeatherResponse toResponse(RouteWeatherReport report) {

@@ -12,10 +12,11 @@ export function RouteForm({ onSubmit, loading }: Props) {
   const [origin, setOrigin] = useState('')
   const [destination, setDestination] = useState('')
   const [travelDate, setTravelDate] = useState(today)
+  const [departureTime, setDepartureTime] = useState('08:00')
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    onSubmit({ origin, destination, travelDate })
+    onSubmit({ origin, destination, travelDate, departureTime })
   }
 
   return (
@@ -54,6 +55,17 @@ export function RouteForm({ onSubmit, loading }: Props) {
             min={today}
             value={travelDate}
             onChange={(e) => setTravelDate(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="departureTime">Departure time</label>
+          <input
+            id="departureTime"
+            type="time"
+            value={departureTime}
+            onChange={(e) => setDepartureTime(e.target.value)}
             required
           />
         </div>
